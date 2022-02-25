@@ -1,46 +1,17 @@
-// send feedback of users who submitted report and congratulate them
-// send feedback of users who didn't submit report and encourage them
-// on hault
-const BotTracker = require('../../model/BotTracker');
 const Users = require('../../model/Users');
 
-const randomCongratMsgs = [
-  'You did awesome guys. Keep it up.',
-  'Yahoo, we made it. Tomorrow we move.',
-];
-
-function feedbackForReportsSubmitted() {
-  getUsersWithReports();
-  return 'Ok done';
-}
-
-const getUsersWithReports = async () => {
+async function givePersonalFeedback(username, channel) {
   try {
-    const usersIds = await BotTracker.find({ bot: 'bot-tracker' }).map(
-      (doc) => {
-        return doc[0].submittedReportsIds;
-      }
-    );
+    const userData = await Users.find({ name: username });
 
-    const users = await usersIds.map(async (id) => {
-      return await Users.findById(id);
-    });
+    const currentDay = userData.length > 0 ? channel === '100daysofcode' ? userData[0].codeDay : userData[0].learnDay : 'not available';
 
-    console.log(users);
-  } catch (err) {
-    console.log(err);
+    const customedMessage = `Hello @${username}, you are currently in day ${currentDay} of the ${channel} challenge.`
+
+    return currentDay !== 'not available' ? customedMessage : 'Unable to fetch your data, seems like you haven\'t started any challenge yet.' 
+  } catch(err) {
+    return 'There has been an error'
   }
-};
-getUsersWithReports();
-
-const randomEncouragMsgs = [
-  'It may not have been possible today, but tomorrow holds a great deal.',
-  'You can and you will.',
-];
-
-function feedbackForNoReports() {
-  // here is a feedback for you
-  return 'Ok done';
 }
 
-module.exports = { feedbackForNoReports, feedbackForReportsSubmitted };
+module.exports = givePersonalFeedback

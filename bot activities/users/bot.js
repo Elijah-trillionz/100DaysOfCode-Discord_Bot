@@ -62,7 +62,7 @@ const checkForExistingUsers = async (username, channel) => {
     return {
       msg:
         day === 100
-          ? `You have completed the ${channel} challenge, you can restart by using the command #restart-${channel}`
+          ? `You have completed the ${channel} challenge, you can restart by using the command $restart-${channel}`
           : `Your progress is already being tracked. You are in day ${day}`,
       day,
       isTracking: true,
@@ -80,9 +80,14 @@ async function upDateProgress(username, day, channel) {
     else await Users.updateOne({ name: username }, { learnDay: +day });
 
     addUserReportToBotTracker(username);
-    return '';
+
+    if (+day === 1) {
+      return `I am now tracking your progress for the ${channel} challenge`;
+    }
+
+    return 'You just stepped up. Great Job.';
   } catch (err) {
-    return 'An error occured while trying to update your progress. Try again';
+    return 'An error occurred while trying to update your progress. Try again';
   }
 }
 
@@ -113,7 +118,7 @@ async function addUserReportToBotTracker(username) {
       { $addToSet: { submittedReportsIds: [users[0]._id] } }
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 }
 
