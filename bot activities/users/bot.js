@@ -136,4 +136,7 @@ async function restartChallenge(username, channel) {
   }
 }
 
+// create a new function that fetches quotes from https://type.fit/api/quotes
+// update it in upDateProgress function
+
 module.exports = { saveNewUser, isConfirmedInDatabase, restartChallenge };
